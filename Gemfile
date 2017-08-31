@@ -22,6 +22,8 @@ gem 'rest-client'
 # gem 'bcrypt', '~> 3.1.7'
 # Use Figaro to make it easy to securely configure Rails applications.
 gem "figaro"
+# Annotate Rails classes with schema and routes info
+gem "annotate"
 
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
