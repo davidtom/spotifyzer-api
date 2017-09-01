@@ -21,8 +21,6 @@ class Album < ApplicationRecord
   validates :spotify_id, uniqueness: true
   validates :name, presence: true
 
-  validate :no_duplicate_tracks
-
   def self.from_json(json)
     assignment_hash = {
       name: json["name"],

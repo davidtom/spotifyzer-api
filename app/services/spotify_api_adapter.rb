@@ -1,21 +1,37 @@
 class SpotifyAPIAdapter
 
+  # TODO:
+  #       6) Idea for loading current data in react then sending a second thunk request from react wich waits for data from rails after rails finishes checking for updates. Test with byebug!
+  #       7) Archive discover playlist? Make a cool transition/image slider or whatever for showing (allow users to start them so they dont have to save all)
+
   def self.get_current_user_library
     #TODO: DELETE BELOW LINE SO WE ALWAYS DEAL WITH THE CURRENT USER
     current_user = User.find(1)
     # TODO: SEE ABOVE
 
+    # Update user's refresh token if necessary
     current_user.update_refresh_token
-    # Formulate and send get request for current_user's library and convert to JSON
+
+    # Create header and parameters for API get request for user's library
     header = {
       Authorization: "Bearer #{current_user.access_token}"
     }
     query_params = {
       limit: 50
     }
-    url = "https://api.spotify.com/v1/me/tracks"
-    response = JSON.parse(RestClient.get("#{url}?#{query_params.to_query}", header))
-    parse_response_pages(response)
+    initial_url = "https://api.spotify.com/v1/me/tracks"
+
+    # Initialize variables to control looping through response pages
+    next_page = true
+    response = nil
+    # Loop over response pages, saving user's library data until there is not a "next" key
+    while next_page do
+      url = !response ?  "#{initial_url}?#{query_params.to_query}" : response["next"]
+      response = JSON.parse(RestClient.get(url, header))
+      persist_user_library(response["items"])
+      next_page = false if !response["next"]
+    end
+
   end
 
   def self.persist_user_library(items)
@@ -24,27 +40,38 @@ class SpotifyAPIAdapter
       track = Track.from_json(item["track"])
       album = Album.from_json(item["track"]["album"])
       album.tracks << track
-      # artists is an array, with genre attached to each one
       artists = Artist.many_from_array(item["track"]["artists"])
-      artists.each {|artist| artist.tracks << track}
+      # Handle validation error with assigning a track to an artist more than once
+      artists.each do |artist|
+        persist_artist_genres(artist)
+        begin
+          artist.tracks << track
+        rescue ActiveRecord::RecordInvalid => invalid
+          puts invalid.record.errors.inspect
+        end
+      end
       TrackUser.create(user_id: 1,
                       track_id: track.id,
                       added_at: item["added_at"])
-      # TODO:
-      #       2) Create logic to go through pages (probably another method)
-      #       3) Run this again to make sure that only new data is persisted
-      #       4) FIX THE REFRESH TOKEN FLOW - try to make it a before_action!
-      #       5) There also seems to be an issue with it being run and the request not having update data in time
-      #       6) Idea for loading current data in react then sending a second thunk request from react wich waits for data from rails after rails finishes checking for updates. Test with byebug!
-      #       7) Archive discover playlist? Make a cool transition/image slider or whatever for showing (allow users to start them so they dont have to save all)
     end
   end
 
-  def self.parse_response_pages(response)
-    byebug
-    while
-    # Iterate over library tracks (in key "items") and persist each in the database
-    # persist_user_library(response["items"])
+  def self.persist_artist_genres(artist)
+    #TODO: DELETE BELOW LINE SO WE ALWAYS DEAL WITH THE CURRENT USER
+    current_user = User.find(1)
+    # TODO: SEE ABOVE
+
+    # NOTE: for now, only get artist genres if they don't have any
+    # TODO: consider whether to open this up - what if artist genres change?
+    if artist.genres.empty?
+      url = "https://api.spotify.com/v1/artists/#{artist.spotify_id}"
+      header = {
+        Authorization: "Bearer #{current_user.access_token}"
+      }
+      response = JSON.parse(RestClient.get(url, header))
+      genres = Genre.many_from_array(response["genres"])
+      genres.each{|genre| artist.genres << genre}
+    end
   end
 
 end
