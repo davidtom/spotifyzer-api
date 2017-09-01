@@ -40,4 +40,14 @@ class Artist < ApplicationRecord
     array.map{|artist| Artist.from_json(artist)}
   end
 
+  def add_images(image_array)
+    assignment_hash = {
+      image_url_small: image_array[2]["url"],
+      image_url_medium: image_array[1]["url"],
+      image_url_large: image_array[0]["url"]
+    }
+    self.update(assignment_hash)
+    byebug
+  end
+
 end

@@ -41,9 +41,9 @@ class SpotifyAPIAdapter
       album = Album.from_json(item["track"]["album"])
       album.tracks << track
       artists = Artist.many_from_array(item["track"]["artists"])
-      # Handle validation error with assigning a track to an artist more than once
+      # Handle validation error from assigning a track to an artist more than once
       artists.each do |artist|
-        persist_artist_genres(artist)
+        persist_additional_artist_data(artist)
         begin
           artist.tracks << track
         rescue ActiveRecord::RecordInvalid => invalid
@@ -56,22 +56,23 @@ class SpotifyAPIAdapter
     end
   end
 
-  def self.persist_artist_genres(artist)
+  def self.persist_additional_artist_data(artist)
     #TODO: DELETE BELOW LINE SO WE ALWAYS DEAL WITH THE CURRENT USER
     current_user = User.find(1)
     # TODO: SEE ABOVE
 
-    # NOTE: for now, only get artist genres if they don't have any
-    # TODO: consider whether to open this up - what if artist genres change?
-    if artist.genres.empty?
-      url = "https://api.spotify.com/v1/artists/#{artist.spotify_id}"
-      header = {
-        Authorization: "Bearer #{current_user.access_token}"
-      }
-      response = JSON.parse(RestClient.get(url, header))
-      genres = Genre.many_from_array(response["genres"])
-      genres.each{|genre| artist.genres << genre}
-    end
+    # Construct and send API call to get artist data (genre and album art)
+    url = "https://api.spotify.com/v1/artists/#{artist.spotify_id}"
+    header = {
+      Authorization: "Bearer #{current_user.access_token}"
+    }
+    response = JSON.parse(RestClient.get(url, header))
+
+    # Save artist images
+    artist.add_images(response["images"])
+    # Create and save artist's genre(s)
+    genres = Genre.many_from_array(response["genres"])
+    genres.each{|genre| artist.genres << genre}
   end
 
 end
