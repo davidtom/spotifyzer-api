@@ -53,4 +53,32 @@ class Artist < ApplicationRecord
     end
   end
 
+  def self.get_by_genre_ids(id_array)
+
+
+    # byebug
+
+
+
+  end
+
+
+
+  # NOTE: this query should return all artists (unique) in a user's library - IF I UPDATE THIS
+  # FIX IT IN GENRE MODEL TOO!
+  # sql_artists =  <<-sql
+  #   SELECT DISTINCT artists.id FROM artists
+  #   JOIN artist_tracks ON artist_tracks.artist_id = artists.id
+  #   JOIN tracks ON tracks.id = artist_tracks.track_id
+  #   JOIN track_users ON track_users.track_id = tracks.id
+  #   WHERE track_users.user_id = 1
+  #   sql
+
+  # # NOTE:
+  # query = <<-sql
+  # JOIN artist_genres ON artist_genres.artist_id = artists.id
+  # WHERE artist_genres.genre_id IN (#{id_array.join(", ")})
+  # sql
+  # result = Artist.joins(query).select("artists.id, artists.name, artists.image_url_small, artists.spotify_url")
+
 end
