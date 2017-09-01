@@ -1,9 +1,5 @@
 class SpotifyAPIAdapter
 
-  # TODO:
-  #       6) Idea for loading current data in react then sending a second thunk request from react wich waits for data from rails after rails finishes checking for updates. Test with byebug!
-  #       7) Archive discover playlist? Make a cool transition/image slider or whatever for showing (allow users to start them so they dont have to save all)
-
   def self.get_current_user_library
     #TODO: DELETE BELOW LINE SO WE ALWAYS DEAL WITH THE CURRENT USER
     current_user = User.find(1)
