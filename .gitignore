@@ -44,4 +44,4 @@ bower.json
 .byebug_history
 
 # Ignore Figaro application.yml
-./config/application.yml
+/config/application.yml
