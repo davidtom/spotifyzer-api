@@ -24,4 +24,20 @@ class Artist < ApplicationRecord
 
   validates :spotify_id, uniqueness: true
   validates :name, presence: true
+
+  def self.from_json(json)
+    assignment_hash = {
+      name: json["name"],
+      spotify_url: json["external_urls"]["spotify"],
+      href: json["href"],
+      spotify_id: json["id"],
+      uri: json["uri"]
+    }
+    Artist.find_or_create_by(assignment_hash)
+  end
+
+  def self.many_from_array(array)
+    array.map{|artist| Artist.from_json(artist)}
+  end
+
 end

@@ -20,4 +20,20 @@ class Album < ApplicationRecord
 
   validates :spotify_id, uniqueness: true
   validates :name, presence: true
+
+  validate :no_duplicate_tracks
+
+  def self.from_json(json)
+    assignment_hash = {
+      name: json["name"],
+      spotify_id: json["id"],
+      spotify_url: json["external_urls"]["spotify"],
+      href: json["href"],
+      uri: json["uri"],
+      image_url_small: json["images"][2]["url"],
+      image_url_medium: json["images"][1]["url"],
+      image_url_large: json["images"][0]["url"]
+    }
+    Album.find_or_create_by(assignment_hash)
+  end
 end
