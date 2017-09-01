@@ -3,9 +3,8 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
 
-      get "/login", to: "users#login"
-      get "/callback", to: "users#callback"
-
+      get "/login", to: "login#create"
+      get "/login_callback", to: "users#create"
 
     end
   end

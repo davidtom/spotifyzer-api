@@ -12,4 +12,4 @@
 
 CLIENT_ID: "a359e608666d4b96b81452cda69ee53e"
 CLIENT_SECRET: "d41bfa9702214ae093bd9ba9d03aabd2"
-REDIRECT_URI: "http://localhost:3000/api/v1/callback"
+REDIRECT_URI: "http://localhost:3000/api/v1/login_callback"
