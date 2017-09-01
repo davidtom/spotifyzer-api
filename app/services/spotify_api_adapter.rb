@@ -72,7 +72,14 @@ class SpotifyAPIAdapter
     artist.add_images(response["images"])
     # Create and save artist's genre(s)
     genres = Genre.many_from_array(response["genres"])
-    genres.each{|genre| artist.genres << genre}
+    # Handle validation error from assigning a genre to an artist more than once
+    genres.each do |genre|
+      begin
+         artist.genres << genre
+      rescue ActiveRecord::RecordInvalid => invalid
+        puts invalid.record.errors.inspect
+      end
+    end
   end
 
 end

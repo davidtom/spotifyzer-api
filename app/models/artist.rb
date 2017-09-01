@@ -41,13 +41,16 @@ class Artist < ApplicationRecord
   end
 
   def add_images(image_array)
-    assignment_hash = {
-      image_url_small: image_array[2]["url"],
-      image_url_medium: image_array[1]["url"],
-      image_url_large: image_array[0]["url"]
-    }
-    self.update(assignment_hash)
-    byebug
+    # handle undefined method `[]' for nil:NilClass error if there is no image
+    begin
+      assignment_hash = {
+        image_url_small: image_array[2]["url"],
+        image_url_medium: image_array[1]["url"],
+        image_url_large: image_array[0]["url"]
+      }
+      self.update(assignment_hash)
+    rescue NoMethodError
+    end
   end
 
 end
