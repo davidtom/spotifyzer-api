@@ -25,10 +25,6 @@ class User < ApplicationRecord
   end
 
   def refresh_access_token
-    # #TODO: DELETE BELOW LINE SO WE ALWAYS DEAL WITH THE CURRENT USER
-    # current_user = User.find(1)
-    # # TODO: SEE ABOVE
-
     # Check if user's access token has expired
     if access_token_expired?
       #Request a new access token using refresh token
