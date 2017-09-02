@@ -14,5 +14,5 @@ class ArtistGenre < ApplicationRecord
   belongs_to :artist
 
   validates :genre_id, uniqueness: {scope: :artist_id,
-    message: "an genre should exist only once for each artist"}
+    message: "a genre should exist only once for each artist"}
 end

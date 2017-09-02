@@ -53,16 +53,25 @@ class Artist < ApplicationRecord
     end
   end
 
-  def self.get_by_genre_ids(id_array)
+  def self.get_user_artist_ids(user)
+    sql = <<-sql
+    SELECT DISTINCT artists.id FROM artists
+    JOIN artist_tracks ON artist_tracks.artist_id = artists.id
+    JOIN tracks ON tracks.id = artist_tracks.track_id
+    JOIN track_users ON track_users.track_id = tracks.id
+    WHERE track_users.user_id = #{db.quote(user.id)}
+    sql
+    result = db.execute(sql)
+    result.map{|el| el["id"]}
+    # Artist.all.joins("JOIN artist_tracks ON artist_tracks.artist_id = artists.id JOIN tracks ON tracks.id = artist_tracks.track_id JOIN track_users ON track_users.track_id = tracks.id AND track_users.user_id = '#{user.id}'").distinct.select(:id)
+  end
 
-
-    # byebug
-
-
-
+  def self.get_user_artists(user)
+    Artist.where(id: get_user_artist_ids(user))
   end
 
 
+# Artist.all.joins("JOIN artist_tracks ON artist_tracks.artist_id = artists.id JOIN tracks ON tracks.id = artist_tracks.track_id JOIN track_users ON track_users.track_id = tracks.id WHERE track_users.user_id = ?", 1)
 
   # NOTE: this query should return all artists (unique) in a user's library - IF I UPDATE THIS
   # FIX IT IN GENRE MODEL TOO!

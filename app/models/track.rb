@@ -42,5 +42,9 @@ class Track < ApplicationRecord
     Track.find_or_create_by(assignment_hash)
   end
 
+  def self.get_user_tracks(user)
+    Track.joins("JOIN track_users ON track_users.track_id = tracks.id AND track_users.user_id = #{user.id}")
+  end
+
 
 end

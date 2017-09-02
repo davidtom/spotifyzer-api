@@ -3,10 +3,16 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
 
-      resources :genres, only: [:index]
-
       get "/login", to: "login#create"
       get "/login_callback", to: "users#create"
+
+      resources :tracks, only: [:index]
+      get "/tracks/top", to: "tracks#top"
+
+      resources :artists, only: [:index]
+      get "/artists/top", to: "artists#top"
+
+      resources :genres, only: [:index]
 
     end
   end

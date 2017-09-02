@@ -18,9 +18,8 @@ class Genre < ApplicationRecord
     array.map{|genre| Genre.find_or_create_by(name: genre)}
   end
 
-  def self.user_library_list(user)
+  def self.user_library_count(user)
     # Returns all genres of all artists in a user's library, grouped and counted by genre name
-    a = ActiveRecord::Base.connection
     sql = <<-sql
     SELECT name, genres.id, COUNT(*) as count FROM genres
     JOIN artist_genres ON genres.id = artist_genres.genre_id
@@ -29,17 +28,16 @@ class Genre < ApplicationRecord
       JOIN artist_tracks ON artist_tracks.artist_id = artists.id
       JOIN tracks ON tracks.id = artist_tracks.track_id
       JOIN track_users ON track_users.track_id = tracks.id
-      WHERE track_users.user_id = #{a.quote(user.id)}
+      WHERE track_users.user_id = #{db.quote(user.id)}
     )
     GROUP BY genres.name, genres.id
     ORDER BY count DESC
     sql
-    JSON.parse(a.execute(sql).to_json)
+    JSON.parse(db.execute(sql).to_json)
   end
 
-  def self.user_library_count(user)
+  def self.user_library_total(user)
     # returns the total count (single integer) of the genres of all artists in the user's library
-    a = ActiveRecord::Base.connection
     sql = <<-sql
     SELECT COUNT(*) as total FROM genres
     JOIN artist_genres ON genres.id = artist_genres.genre_id
@@ -48,10 +46,21 @@ class Genre < ApplicationRecord
       JOIN artist_tracks ON artist_tracks.artist_id = artists.id
       JOIN tracks ON tracks.id = artist_tracks.track_id
       JOIN track_users ON track_users.track_id = tracks.id
-      WHERE track_users.user_id = #{a.quote(user.id)}
+      WHERE track_users.user_id = #{db.quote(user.id)}
     )
     sql
-    JSON.parse(a.execute(sql).to_json)
+    JSON.parse(db.execute(sql).to_json)
+  end
+
+  def self.get_user_artists_by_genre(artist_genre_json, user_artist_ids)
+    artist_genre_json.map do |genre|
+      artists = Genre.find(genre["id"]).artists.where(id: user_artist_ids).select(:id, :name, :spotify_url, :image_url_small)
+      {genre_name: genre["name"],
+        genre_id: genre["id"],
+        count: artists.length,
+        artists: artists
+      }
+    end
   end
 
 end

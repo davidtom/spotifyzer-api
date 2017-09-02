@@ -24,7 +24,7 @@ class User < ApplicationRecord
     (Time.now - self.updated_at) > 3300
   end
 
-  def update_refresh_token
+  def refresh_access_token
     # #TODO: DELETE BELOW LINE SO WE ALWAYS DEAL WITH THE CURRENT USER
     # current_user = User.find(1)
     # # TODO: SEE ABOVE
