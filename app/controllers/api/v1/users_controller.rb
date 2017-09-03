@@ -33,7 +33,7 @@ class Api::V1::UsersController < ApplicationController
       # Update the access and refresh tokens in the database
       @user.update(access_token:auth_params["access_token"], refresh_token: auth_params["refresh_token"])
       # Redirect user to main page
-      redirect_to "http://localhost:3001/"
+      redirect_to "http://localhost:3001/dashboard"
     end
   end
 
