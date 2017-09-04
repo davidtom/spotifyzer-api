@@ -62,11 +62,16 @@ class Artist < ApplicationRecord
     WHERE track_users.user_id = #{db.quote(user.id)}
     sql
     result = db.execute(sql)
-    result.map{|el| el["id"]}
+    # return an array of only artist ids
+    result.map{|artist| artist["id"]}
   end
 
   def self.get_user_artists(user)
     Artist.where(id: get_user_artist_ids(user))
+  end
+
+  def self.user_library_total(user)
+    Artist.get_user_artist_ids(user).length
   end
 
 end

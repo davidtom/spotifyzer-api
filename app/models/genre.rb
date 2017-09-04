@@ -37,9 +37,9 @@ class Genre < ApplicationRecord
   end
 
   def self.user_library_total(user)
-    # returns the total count (single integer) of the genres of all artists in the user's library
+    # returns the total count of the (unique) genres of all artists in the user's library
     sql = <<-sql
-    SELECT COUNT(*) as total FROM genres
+    SELECT DISTINCT genres.id FROM genres
     JOIN artist_genres ON genres.id = artist_genres.genre_id
     AND artist_genres.artist_id IN (
       SELECT DISTINCT artists.id FROM artists
@@ -49,14 +49,15 @@ class Genre < ApplicationRecord
       WHERE track_users.user_id = #{db.quote(user.id)}
     )
     sql
-    JSON.parse(db.execute(sql).to_json)
+    result = JSON.parse(db.execute(sql).to_json)
+    result.length
   end
 
   def self.get_user_artists_by_genre(artist_genre_json, user_artist_ids)
     artist_genre_json.map do |genre|
       artists = Genre.find(genre["id"]).artists.where(id: user_artist_ids).select(:id, :name, :spotify_url, :image_url_small)
-      {genre_name: genre["name"],
-        genre_id: genre["id"],
+      {name: genre["name"],
+        id: genre["id"],
         count: artists.length,
         artists: artists
       }
