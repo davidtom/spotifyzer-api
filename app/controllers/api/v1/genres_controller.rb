@@ -8,6 +8,8 @@ class Api::V1::GenresController < ApplicationController
     artist_genres = Genre.user_library_count(current_user)
     artist_ids = Artist.get_user_artist_ids(current_user)
     artists_by_genre = Genre.get_user_artists_by_genre(artist_genres, artist_ids)
-    render json: {artists_by_genre: artists_by_genre} , status: 200
+    total_artists = Artist.user_library_total(current_user)
+    render json: {artists_by_genre: artists_by_genre,
+                  total_artists: total_artists}, status: 200
   end
 end
