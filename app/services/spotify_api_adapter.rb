@@ -1,12 +1,12 @@
 class SpotifyAPIAdapter
 
-  def get_current_user_library
+  def self.get_user_library(user)
     # Update user's refresh token if necessary
-    current_user.refresh_access_token
+    user.refresh_access_token
 
     # Create header and parameters for API get request for user's library
     header = {
-      Authorization: "Bearer #{current_user.access_token}"
+      Authorization: "Bearer #{user.access_token}"
     }
     query_params = {
       limit: 50
@@ -20,13 +20,13 @@ class SpotifyAPIAdapter
     while next_page do
       url = !response ?  "#{initial_url}?#{query_params.to_query}" : response["next"]
       response = JSON.parse(RestClient.get(url, header))
-      persist_user_library(response["items"])
+      persist_user_library(user, response["items"])
       next_page = false if !response["next"]
     end
 
   end
 
-  def persist_user_library(items)
+  def self.persist_user_library(user, items)
     # TODO: decide if this belongs here or in one of the models??
 
     # iterate over each item (a track in the user's library) and persist/create associations
@@ -37,24 +37,24 @@ class SpotifyAPIAdapter
       artists = Artist.many_from_array(item["track"]["artists"])
       # Handle validation error from assigning a track to an artist more than once
       artists.each do |artist|
-        persist_additional_artist_data(artist)
+        persist_additional_artist_data(user, artist)
         begin
           artist.tracks << track
         rescue ActiveRecord::RecordInvalid => invalid
           puts invalid.record.errors.inspect
         end
       end
-      TrackUser.create(user_id: current_user.id,
+      TrackUser.create(user_id: user.id,
                       track_id: track.id,
                       added_at: item["added_at"])
     end
   end
 
-  def persist_additional_artist_data(artist)
+  def self.persist_additional_artist_data(user, artist)
     # Construct and send API call to get artist data (genre and album art)
     url = "https://api.spotify.com/v1/artists/#{artist.spotify_id}"
     header = {
-      Authorization: "Bearer #{current_user.access_token}"
+      Authorization: "Bearer #{user.access_token}"
     }
     response = JSON.parse(RestClient.get(url, header))
     # Save artist images
@@ -71,14 +71,14 @@ class SpotifyAPIAdapter
     end
   end
 
-  def get_user_top_artists(time_range)
+  def self.get_user_top_artists(user, time_range)
     # Update user's refresh token if necessary
-    current_user.refresh_access_token
+    user.refresh_access_token
 
     # Construct and send API call to get artist data (genre and album art)
     api_url = "https://api.spotify.com/v1/me/top/artists/"
     header = {
-      Authorization: "Bearer #{current_user.access_token}"
+      Authorization: "Bearer #{user.access_token}"
     }
     query_params = {
       limit: 50,
@@ -90,14 +90,14 @@ class SpotifyAPIAdapter
     response["items"]
   end
 
-  def get_user_top_tracks(time_range)
+  def self.get_user_top_tracks(user, time_range)
     # Update user's refresh token if necessary
-    current_user.refresh_access_token
+    user.refresh_access_token
 
     # Construct and send API call to get artist data (genre and album art)
     api_url = "https://api.spotify.com/v1/me/top/tracks/"
     header = {
-      Authorization: "Bearer #{current_user.access_token}"
+      Authorization: "Bearer #{user.access_token}"
     }
     query_params = {
       limit: 50,

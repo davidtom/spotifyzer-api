@@ -8,9 +8,8 @@ class Api::V1::ArtistsController < ApplicationController
   end
 
   def top
-   s = SpotifyAPIAdapter.new
    time_range = params[:time_range] || "medium_term"
-   top_artists = s.get_user_top_artists(time_range)
+   top_artists = SpotifyAPIAdapter.get_user_top_artists(current_user, time_range)
    render json: top_artists, status: 200
   end
 end
