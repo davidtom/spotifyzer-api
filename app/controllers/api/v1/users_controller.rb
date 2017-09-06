@@ -1,5 +1,7 @@
 class Api::V1::UsersController < ApplicationController
 
+  skip_before_action :authorized
+
   def create
     # Assemble and send request to Spotify for access and refresh tokens
     body = {
@@ -26,6 +28,7 @@ class Api::V1::UsersController < ApplicationController
                       uri: user_params["uri"])
     # Update the access and refresh tokens in the database
     @user.update(access_token:auth_params["access_token"], refresh_token: auth_params["refresh_token"])
+
     # Create and send JWT Token for user
     payload = {user_id: @user.id}
     token = issue_token(payload)

@@ -1,4 +1,4 @@
-class SpotifyAPIAdapter < ApplicationController
+class SpotifyAPIAdapter
 
   def get_current_user_library
     # Update user's refresh token if necessary

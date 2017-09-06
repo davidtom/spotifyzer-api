@@ -3,8 +3,11 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
 
-      get "/login", to: "login#create"
-      get "/login_callback", to: "users#create"
+
+      get "/login", to: "auth#spotify_request"
+      get "/auth", to: "auth#show"
+
+      resources :users, only: [:create]
 
       resources :tracks, only: [:index]
       get "/tracks/top", to: "tracks#top"

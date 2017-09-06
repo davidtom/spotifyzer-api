@@ -1,5 +1,7 @@
 class Api::V1::ArtistsController < ApplicationController
 
+  before_action :authorized
+
   def index
     artists = Artist.get_user_artists(current_user)
     render json: artists, status: 200
