@@ -5,7 +5,7 @@ class Api::V1::UsersController < ApplicationController
     body = {
       grant_type: "authorization_code",
       code: params[:code],
-      redirect_uri: ENV['REDIRECT_URII'],
+      redirect_uri: ENV['REDIRECT_URI'],
       client_id: ENV['CLIENT_ID'],
       client_secret: ENV["CLIENT_SECRET"]
     }
