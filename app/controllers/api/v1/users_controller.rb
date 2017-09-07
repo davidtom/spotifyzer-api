@@ -26,8 +26,9 @@ class Api::V1::UsersController < ApplicationController
                       spotify_url: user_params["external_urls"]["spotify"],
                       href: user_params["href"],
                       uri: user_params["uri"])
-    # Add user's profile image, if it exists:
-    @user.update(profile_img_url: user_params["images"][0]["url"]) if user_params["images"][0]
+    # Add or update user's profile image:
+    img_url = user_params["images"][0] ? user_params["images"][0]["url"] : nil
+    @user.update(profile_img_url: img_url)
     # Update the access and refresh tokens in the database
     @user.update(access_token:auth_params["access_token"], refresh_token: auth_params["refresh_token"])
 
