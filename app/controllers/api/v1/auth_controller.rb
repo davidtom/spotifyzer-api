@@ -26,7 +26,9 @@ class Api::V1::AuthController < ApplicationController
   def show
   # if application_controller#authorized is successful, return data for user
     # render json: current_user
-    render json: {username: current_user.username, spotify_url: current_user.spotify_url}
+    render json: {username: current_user.username,
+                  spotify_url: current_user.spotify_url,
+                  profile_img_url: current_user.profile_img_url}
   end
 
 end
