@@ -19,7 +19,12 @@ class SpotifyAPIAdapter
     # Loop over response pages, saving user's library data until there is not a "next" key
     while next_page do
       url = !response ?  "#{initial_url}?#{query_params.to_query}" : response["next"]
-      response = JSON.parse(RestClient.get(url, header))
+      begin
+        response = JSON.parse(RestClient.get(url, header))
+      rescue RestClient::Exceptions::OpenTimeout
+        # If there is a timeout error, force loop to exit
+        response = {}
+      end
       persist_user_library(user, response["items"])
       next_page = false if !response["next"]
     end
