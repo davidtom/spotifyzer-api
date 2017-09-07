@@ -42,19 +42,19 @@ class Track < ApplicationRecord
     Track.find_or_create_by(assignment_hash)
   end
 
-  def self.get_user_tracks(user)
-    Track.joins("JOIN track_users ON track_users.track_id = tracks.id AND track_users.user_id = #{user.id}")
-  end
-
-  def self.user_library_total(user)
-    sql = <<-sql
-    SELECT COUNT(*) as total FROM tracks
-    JOIN track_users ON track_users.track_id = tracks.id
-    AND track_users.user_id = #{db.quote(user.id)}
-    sql
-    result = JSON.parse(db.execute(sql).to_json)
-    result[0]["total"]
-  end
+  # def self.get_user_tracks(user)
+  #   Track.joins("JOIN track_users ON track_users.track_id = tracks.id AND track_users.user_id = #{user.id}")
+  # end
+  #
+  # def self.user_library_total(user)
+  #   sql = <<-sql
+  #   SELECT COUNT(*) as total FROM tracks
+  #   JOIN track_users ON track_users.track_id = tracks.id
+  #   AND track_users.user_id = #{db.quote(user.id)}
+  #   sql
+  #   result = JSON.parse(db.execute(sql).to_json)
+  #   result[0]["total"]
+  # end
 
 
 end

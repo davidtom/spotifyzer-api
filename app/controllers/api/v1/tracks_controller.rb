@@ -1,7 +1,7 @@
 class Api::V1::TracksController < ApplicationController
 
   def index
-    tracks = Track.get_user_tracks(current_user)
+    tracks = current_user.tracks
     render json: tracks, status: 200
   end
 
