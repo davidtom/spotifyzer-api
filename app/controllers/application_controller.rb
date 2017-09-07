@@ -1,7 +1,7 @@
 class ApplicationController < ActionController::API
   include ActionController::HttpAuthentication::Token::ControllerMethods
 
-  before_action :authorized
+  before_action :authorized, except: [:issue_token, :decode_token, :logged_in?]
 
   # def current_user
   #  #TODO: DELETE BELOW LINE SO WE ALWAYS DEAL WITH THE CURRENT USER
