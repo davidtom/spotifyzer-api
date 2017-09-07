@@ -5,6 +5,7 @@ class CreateUsers < ActiveRecord::Migration[5.1]
       t.string :access_token
       t.string :refresh_token
       t.string :spotify_url
+      t.string :profile_img_url
       t.string :href
       t.string :uri
 
