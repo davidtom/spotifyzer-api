@@ -25,9 +25,9 @@ class Genre < ApplicationRecord
 
   def self.list_with_artists_by_ids(genres, artist_ids)
     # Given an array of genres and an array of artists ids, return a new array
-    # of hashes with the following:
-    # Genre name, genre id, count of artists in that genre that are in the
-    # artst_id array, and an array of those artists
+    # of hashes with the following: Genre name, genre id, count of artists in
+    # that genre that are in the artst_id array, and an array of those artists
+    # Finally, sort this array in descending order by artist count
     genres.map do |genre|
       artists = genre.artists_by_ids(artist_ids)
       {id: genre.id,
@@ -35,15 +35,7 @@ class Genre < ApplicationRecord
        count: artists.length,
        artists: artists
       }
-    end
-    # artist_genre_json.map do |genre|
-    #   artists = Genre.find(genre["id"]).artists.where(id: user_artist_ids).select(:id, :name, :spotify_url, :image_url_small)
-    #   {name: genre["name"],
-    #     id: genre["id"],
-    #     count: artists.length,
-    #     artists: artists
-    #   }
-    # end
+    end.sort_by {|genre| genre[:count]}.reverse
   end
 
 end

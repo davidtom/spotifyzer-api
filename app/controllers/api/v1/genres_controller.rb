@@ -11,7 +11,6 @@ class Api::V1::GenresController < ApplicationController
     # For each genre in the users's library, get a list of all the artists
     # in the user's library who match that genre
     artists_by_genre = Genre.list_with_artists_by_ids(user_library_genres, artist_ids)
-
     render json: {artists_by_genre: artists_by_genre,
                   total_artists: artist_ids.length}, status: 200
   end
