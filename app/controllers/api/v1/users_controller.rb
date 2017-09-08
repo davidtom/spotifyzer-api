@@ -42,7 +42,7 @@ class Api::V1::UsersController < ApplicationController
                                 }
                               }
     # If user was just created and has no tracks saved, get them from Spotify
-    SpotifyAPIAdapter.get_user_library(@user) if @user.tracks.empty?
+    # SpotifyAPIAdapter.get_user_library(@user) if @user.tracks.empty?
   end
 
 end
