@@ -1,7 +1,9 @@
 class Api::V1::GenresController < ApplicationController
 
   def index
-    # TODO docstring
+    ## Returns a list of all genres in the user's library, with all artists
+    ## in the user's library who are in that genre
+
     # Get a list of all genres in the user's library
     user_library_genres = current_user.genres.distinct.select(:id, :name)
     # Get a list of all artists (id only) in the user's library
