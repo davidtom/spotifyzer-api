@@ -52,9 +52,11 @@ class User < ApplicationRecord
   def save_library
     # Create a new thread to save user library data from Spotify, as this
     # can take a while causing other requests to wait
-    Thread.new do
+    thr = Thread.new do
       ActiveRecord::Base.connection_pool.with_connection do |conn|
         SpotifyAPIAdapter.get_user_library(self)
+        # Terminate thread
+        thr.exit
       end
     end
   end
