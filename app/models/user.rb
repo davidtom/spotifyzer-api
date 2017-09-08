@@ -15,7 +15,7 @@
 #
 
 class User < ApplicationRecord
-  has_many :track_users
+  has_many :track_users, dependent: :destroy
   has_many :tracks, through: :track_users
 
   has_many :artists, through: :tracks
@@ -46,6 +46,16 @@ class User < ApplicationRecord
       self.update(access_token: auth_params["access_token"])
     else
       puts "Current user's access token has not expired"
+    end
+  end
+
+  def save_library
+    # Create a new thread to save user library data from Spotify, as this
+    # can take a while causing other requests to wait
+    Thread.new do
+      ActiveRecord::Base.connection_pool.with_connection do |conn|
+        SpotifyAPIAdapter.get_user_library(self)
+      end
     end
   end
 

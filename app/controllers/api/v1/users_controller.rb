@@ -32,21 +32,23 @@ class Api::V1::UsersController < ApplicationController
     # Update the access and refresh tokens in the database
     @user.update(access_token:auth_params["access_token"], refresh_token: auth_params["refresh_token"])
 
-    # Create and send JWT Token for user
+    # Create and send JWT Token for user; also signal to front-end whether the
+    # user's library is being loaded or not (see below)
     payload = {user_id: @user.id}
     token = issue_token(payload)
+    loading_library = @user.tracks.empty?
     render json: {jwt: token, user: {
                                 username: @user.username,
                                 spotify_url: @user.spotify_url,
-                                profile_img_url: @user.profile_img_url
+                                profile_img_url: @user.profile_img_url,
+                                loading_library: loading_library
                                 }
                               }
-    # If user was just created and has no tracks saved, get them from Spotify
-    # Test threading
-    # Thread.new do
-    #   puts "im async!"
-    #   puts SpotifyAPIAdapter.get_user_top_tracks(@user)
-    # end
+    # If user was just created and has no tracks saved, save them from Spotify
+    # (creates a new thread to allow other requests to be made)
+    if loading_library
+      @user.save_library
+    end
   end
 
 end
