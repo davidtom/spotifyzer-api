@@ -18,6 +18,10 @@ class User < ApplicationRecord
   has_many :track_users
   has_many :tracks, through: :track_users
 
+  has_many :artists, through: :tracks
+
+  has_many :genres, through: :artists
+
   validates :username, uniqueness: true, presence: true
 
   def access_token_expired?

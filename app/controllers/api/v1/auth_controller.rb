@@ -1,6 +1,6 @@
 class Api::V1::AuthController < ApplicationController
 
-  before_action :authorized, only: [:show]
+  skip_before_action :authorized, only: [:spotify_request]
 
   def spotify_request
     # User has clicked "login" button - assemble get request to Spotify to have
@@ -19,6 +19,7 @@ class Api::V1::AuthController < ApplicationController
   end
 
   def create
+    # Placeholder
     # NOTE: tokens are created and issued in users#create, due to how data is
     # handled from Spotify and restrictions on internal redirects with post actions
   end
