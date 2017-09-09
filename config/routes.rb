@@ -16,7 +16,9 @@ Rails.application.routes.draw do
       get "/artists/top", to: "artists#top"
 
       resources :genres, only: [:index]
+
       get "/library", to: "library#index"
+      patch "/library", to: "library#update"
 
     end
   end
