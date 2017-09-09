@@ -8,6 +8,7 @@ class CreateUsers < ActiveRecord::Migration[5.1]
       t.string :profile_img_url
       t.string :href
       t.string :uri
+      t.boolean :full_library, default: false
 
       t.timestamps
     end

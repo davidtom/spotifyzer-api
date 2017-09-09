@@ -18,50 +18,24 @@ class Genre < ApplicationRecord
     array.map{|genre| Genre.find_or_create_by(name: genre)}
   end
 
-  def self.user_library_count(user)
-    # Returns all genres of all artists in a user's library, grouped and counted by genre name
-    sql = <<-sql
-    SELECT name, genres.id, COUNT(*) as count FROM genres
-    JOIN artist_genres ON genres.id = artist_genres.genre_id
-    AND artist_genres.artist_id IN (
-      SELECT DISTINCT artists.id FROM artists
-      JOIN artist_tracks ON artist_tracks.artist_id = artists.id
-      JOIN tracks ON tracks.id = artist_tracks.track_id
-      JOIN track_users ON track_users.track_id = tracks.id
-      WHERE track_users.user_id = #{db.quote(user.id)}
-    )
-    GROUP BY genres.name, genres.id
-    ORDER BY count DESC
-    sql
-    JSON.parse(db.execute(sql).to_json)
+  def artists_by_ids(artist_ids)
+    # Find all of the genre's artists that match a list of artist ids
+    self.artists.where(id: artist_ids).select(:id, :name, :spotify_url, :image_url_small)
   end
 
-  def self.user_library_total(user)
-    # returns the total count of the (unique) genres of all artists in the user's library
-    sql = <<-sql
-    SELECT DISTINCT genres.id FROM genres
-    JOIN artist_genres ON genres.id = artist_genres.genre_id
-    AND artist_genres.artist_id IN (
-      SELECT DISTINCT artists.id FROM artists
-      JOIN artist_tracks ON artist_tracks.artist_id = artists.id
-      JOIN tracks ON tracks.id = artist_tracks.track_id
-      JOIN track_users ON track_users.track_id = tracks.id
-      WHERE track_users.user_id = #{db.quote(user.id)}
-    )
-    sql
-    result = JSON.parse(db.execute(sql).to_json)
-    result.length
-  end
-
-  def self.get_user_artists_by_genre(artist_genre_json, user_artist_ids)
-    artist_genre_json.map do |genre|
-      artists = Genre.find(genre["id"]).artists.where(id: user_artist_ids).select(:id, :name, :spotify_url, :image_url_small)
-      {name: genre["name"],
-        id: genre["id"],
-        count: artists.length,
-        artists: artists
+  def self.list_with_artists_by_ids(genres, artist_ids)
+    # Given an array of genres and an array of artists ids, return a new array
+    # of hashes with the following: Genre name, genre id, count of artists in
+    # that genre that are in the artst_id array, and an array of those artists
+    # Finally, sort this array in descending order by artist count
+    genres.map do |genre|
+      artists = genre.artists_by_ids(artist_ids)
+      {id: genre.id,
+       name: genre.name,
+       count: artists.length,
+       artists: artists
       }
-    end
+    end.sort_by {|genre| genre[:count]}.reverse
   end
 
 end

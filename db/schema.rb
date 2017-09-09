@@ -91,6 +91,7 @@ ActiveRecord::Schema.define(version: 20170831160942) do
     t.string "profile_img_url"
     t.string "href"
     t.string "uri"
+    t.boolean "full_library", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

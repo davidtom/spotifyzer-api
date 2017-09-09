@@ -53,25 +53,4 @@ class Artist < ApplicationRecord
     end
   end
 
-  def self.get_user_artist_ids(user)
-    sql = <<-sql
-    SELECT DISTINCT artists.id FROM artists
-    JOIN artist_tracks ON artist_tracks.artist_id = artists.id
-    JOIN tracks ON tracks.id = artist_tracks.track_id
-    JOIN track_users ON track_users.track_id = tracks.id
-    WHERE track_users.user_id = #{db.quote(user.id)}
-    sql
-    result = db.execute(sql)
-    # return an array of only artist ids
-    result.map{|artist| artist["id"]}
-  end
-
-  def self.get_user_artists(user)
-    Artist.where(id: get_user_artist_ids(user))
-  end
-
-  def self.user_library_total(user)
-    Artist.get_user_artist_ids(user).length
-  end
-
 end
