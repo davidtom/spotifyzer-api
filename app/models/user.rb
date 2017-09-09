@@ -10,6 +10,7 @@
 #  profile_img_url :string
 #  href            :string
 #  uri             :string
+#  full_library    :boolean          default(FALSE)
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
 #
@@ -50,11 +51,15 @@ class User < ApplicationRecord
   end
 
   def save_library
+    # Flag that a users library is being saved
+    self.update(full_library: false)
     # Create a new thread to save user library data from Spotify, as this
     # can take a while causing other requests to wait
     thr = Thread.new do
       ActiveRecord::Base.connection_pool.with_connection do |conn|
         SpotifyAPIAdapter.get_user_library(self)
+        # Flag that a user's library is now saved
+        self.update(full_library: true)
         # Terminate thread
         thr.exit
       end
