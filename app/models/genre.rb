@@ -43,7 +43,7 @@ class Genre < ApplicationRecord
   private
 
     def make_title_case
-      self.name = self.name.titleize
+      self.name.titleize
     end
 
 end

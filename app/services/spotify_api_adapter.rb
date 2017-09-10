@@ -90,8 +90,8 @@ class SpotifyAPIAdapter
       time_range: time_range
     }
     url = "#{api_url}?#{query_params.to_query}"
-    response = JSON.parse(RestClient.get(url, header))
     # Parse and return only artists from response
+    response = JSON.parse(RestClient.get(url, header))
     response["items"]
   end
 
