@@ -80,7 +80,7 @@ class SpotifyAPIAdapter
     # Update user's refresh token if necessary
     user.refresh_access_token
 
-    # Construct and send API call to get artist data (genre and album art)
+    # Construct and send API call to get top artists
     api_url = "https://api.spotify.com/v1/me/top/artists/"
     header = {
       Authorization: "Bearer #{user.access_token}"
@@ -90,7 +90,7 @@ class SpotifyAPIAdapter
       time_range: time_range
     }
     url = "#{api_url}?#{query_params.to_query}"
-    # Parse and return only artists from response
+    # Parse and return only artist items from response
     response = JSON.parse(RestClient.get(url, header))
     response["items"]
   end
@@ -99,7 +99,7 @@ class SpotifyAPIAdapter
     # Update user's refresh token if necessary
     user.refresh_access_token
 
-    # Construct and send API call to get artist data (genre and album art)
+    # Construct and send API call to get top tracks
     api_url = "https://api.spotify.com/v1/me/top/tracks/"
     header = {
       Authorization: "Bearer #{user.access_token}"
@@ -109,9 +109,45 @@ class SpotifyAPIAdapter
       time_range: time_range
     }
     url = "#{api_url}?#{query_params.to_query}"
+    # Parse and return only track items from response
     response = JSON.parse(RestClient.get(url, header))
-    # Parse and return only artists from response
     response["items"]
   end
+
+  def self.get_user_recent_tracks(user)
+    # Update user's refresh token if necessary
+    user.refresh_access_token
+
+    # Construct and send API call to get user's 50 most recently played tracks
+    api_url = "https://api.spotify.com/v1/me/player/recently-played/"
+    header = {
+      Authorization: "Bearer #{user.access_token}"
+    }
+    query_params = {
+      limit: 50
+    }
+    url = "#{api_url}?#{query_params.to_query}"
+    # Parse and return only track items from response, grouped by date for d3
+    response = JSON.parse(RestClient.get(url, header))
+    group_recent_tracks(response["items"])
+  end
+
+  private
+    def self.group_recent_tracks(tracks)
+      # Add track to hash where each key is a date and hour
+      # Each keys holds a hash with two keys: tracks (array) and count (integer)
+      # This should make it easy to create a bar chart with d3
+      previous_date_and_hour = nil
+      tracks.each_with_object([]) do |track, arr|
+        date_and_hour = track["played_at"].to_datetime.strftime("%Y:%m:%d:%H")
+        if date_and_hour == previous_date_and_hour
+          arr.last[:tracks] << track
+          arr.last[:count] += 1
+        else
+          arr << {time: date_and_hour, tracks: [track], count: 1}
+          previous_date_and_hour = date_and_hour
+        end
+      end
+    end
 
 end

@@ -11,6 +11,7 @@ Rails.application.routes.draw do
 
       resources :tracks, only: [:index]
       get "/tracks/top", to: "tracks#top"
+      get "/tracks/recent", to: "tracks#recent"
 
       resources :artists, only: [:index]
       get "/artists/top", to: "artists#top"
