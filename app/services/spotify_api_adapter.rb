@@ -134,20 +134,21 @@ class SpotifyAPIAdapter
 
   private
     def self.group_recent_tracks(tracks)
-      # Add track to hash where each key is a date and hour
-      # Each keys holds a hash with two keys: tracks (array) and count (integer)
-      # This should make it easy to create a bar chart with d3
+      # Create an array of hashes, each hash containing a key for a date and
+      # and hour, an array of tracks played at that time, and the total track count;
+      # Reverse array so that it is in ascending order by time
       previous_date_and_hour = nil
       tracks.each_with_object([]) do |track, arr|
         date_and_hour = track["played_at"].to_datetime.strftime("%Y:%m:%d:%H")
         if date_and_hour == previous_date_and_hour
-          arr.last[:tracks] << track
+          # add track to beginning of array, so they are in ascending order
+          arr.last[:tracks].unshift(track)
           arr.last[:count] += 1
         else
           arr << {time: date_and_hour, tracks: [track], count: 1}
           previous_date_and_hour = date_and_hour
         end
-      end
+      end.reverse
     end
 
 end
