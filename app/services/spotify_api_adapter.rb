@@ -139,7 +139,7 @@ class SpotifyAPIAdapter
       # Reverse array so that it is in ascending order by time
       previous_date_and_hour = nil
       tracks.each_with_object([]) do |track, arr|
-        date_and_hour = track["played_at"].to_datetime.strftime("%Y:%m:%d:%H")
+        date_and_hour = track["played_at"].to_datetime.strftime("%Y-%m-%dT%H")
         if date_and_hour == previous_date_and_hour
           # add track to beginning of array, so they are in ascending order
           arr.last[:tracks].unshift(track)
