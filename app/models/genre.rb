@@ -14,10 +14,8 @@ class Genre < ApplicationRecord
 
   validates :name, uniqueness: true, presence: true
 
-  before_save :make_title_case
-
   def self.many_from_array(array)
-    array.map{|genre| Genre.find_or_create_by(name: genre)}
+    array.map{|genre| Genre.find_or_create_by(name: genre.titleize)}
   end
 
   def artists_by_ids(artist_ids)
@@ -39,11 +37,5 @@ class Genre < ApplicationRecord
       }
     end.sort_by {|genre| genre[:count]}.reverse
   end
-
-  private
-
-    def make_title_case
-      self.name.titleize
-    end
 
 end
