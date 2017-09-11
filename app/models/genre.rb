@@ -20,7 +20,7 @@ class Genre < ApplicationRecord
 
   def artists_by_ids(artist_ids)
     # Find all of the genre's artists that match a list of artist ids
-    self.artists.where(id: artist_ids).select(:id, :name, :spotify_url, :image_url_small)
+    self.artists.where(id: artist_ids).select(:id, :name, :spotify_url, :uri, :image_url_small)
   end
 
   def self.list_with_artists_by_ids(genres, artist_ids)
