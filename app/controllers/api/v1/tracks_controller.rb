@@ -12,8 +12,8 @@ class Api::V1::TracksController < ApplicationController
   end
 
   def recent
-    recent_tracks = SpotifyAPIAdapter.get_user_recent_tracks(current_user)
-    render json: recent_tracks, status: 200
+    recent_track_data = SpotifyAPIAdapter.get_user_recent_tracks(current_user)
+    render json: recent_track_data, status: 200
   end
 
 end

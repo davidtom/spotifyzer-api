@@ -129,7 +129,24 @@ class SpotifyAPIAdapter
     url = "#{api_url}?#{query_params.to_query}"
     # Parse and return only track items from response, grouped by date for d3
     response = JSON.parse(RestClient.get(url, header))
-    group_recent_tracks(response["items"])
+    recent_tracks = group_recent_tracks(response["items"])
+    time_analysis = recent_track_time_analysis(response["items"])
+    {
+      recent_tracks: recent_tracks,
+      time_analysis: time_analysis
+    }
+  end
+
+  def self.recent_track_time_analysis(items)
+    elapsed_t_seconds = Time.parse(items.first["played_at"]) - Time.parse(items.last["played_at"])
+    elapsed_t_hours = elapsed_t_seconds/3600.0
+    # Get time in full hours
+    elapsed_hours = elapsed_t_hours.truncate
+    # Get time in full minutes
+    elapsed_minutes = (elapsed_t_hours%1) * 60
+    # Get tracks played per hour
+    tracks_per_hour = elapsed_t_hours / items.length.to_f
+    {hours: elapsed_hours, minutes: elapsed_minutes, per_hour: tracks_per_hour}
   end
 
   private
