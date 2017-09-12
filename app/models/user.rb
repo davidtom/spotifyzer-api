@@ -2,17 +2,18 @@
 #
 # Table name: users
 #
-#  id              :integer          not null, primary key
-#  username        :string
-#  access_token    :string
-#  refresh_token   :string
-#  spotify_url     :string
-#  profile_img_url :string
-#  href            :string
-#  uri             :string
-#  full_library    :boolean          default(FALSE)
-#  created_at      :datetime         not null
-#  updated_at      :datetime         not null
+#  id                  :integer          not null, primary key
+#  username            :string
+#  access_token        :string
+#  refresh_token       :string
+#  spotify_url         :string
+#  profile_img_url     :string
+#  href                :string
+#  uri                 :string
+#  full_library        :boolean          default(FALSE)
+#  last_library_update :datetime
+#  created_at          :datetime         not null
+#  updated_at          :datetime         not null
 #
 
 class User < ApplicationRecord
@@ -51,8 +52,8 @@ class User < ApplicationRecord
   end
 
   def save_library
-    # Flag that a users library is being saved
-    self.update(full_library: false)
+    # Flag that a users library is being saved, and updated last_library_update
+    self.update(full_library: false, last_library_update: DateTime.now)
     # Create a new thread to save user library data from Spotify, as this
     # can take a while causing other requests to wait
     thr = Thread.new do

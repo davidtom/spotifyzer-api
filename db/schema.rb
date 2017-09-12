@@ -92,6 +92,7 @@ ActiveRecord::Schema.define(version: 20170831160942) do
     t.string "href"
     t.string "uri"
     t.boolean "full_library", default: false
+    t.datetime "last_library_update"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

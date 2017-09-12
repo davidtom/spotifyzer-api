@@ -12,7 +12,8 @@ class Api::V1::LibraryController < ApplicationController
       render json: {tracks: tracks_count,
                     artists: artists_count,
                     genres: genres_count,
-                    last_update: current_user.track_users.order("updated_at").last.updated_at.to_date},
+                    last_update: current_user.last_library_update.to_date
+                    },
                     status: 200
     else
     # If a thread is currently saving the library, report that to client

@@ -9,6 +9,7 @@ class CreateUsers < ActiveRecord::Migration[5.1]
       t.string :href
       t.string :uri
       t.boolean :full_library, default: false
+      t.datetime :last_library_update
 
       t.timestamps
     end
