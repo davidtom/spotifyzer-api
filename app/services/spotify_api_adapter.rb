@@ -145,7 +145,7 @@ class SpotifyAPIAdapter
     # Get time in full minutes
     elapsed_minutes = (elapsed_t_hours%1) * 60
     # Get tracks played per hour
-    tracks_per_hour = elapsed_t_hours / items.length.to_f
+    tracks_per_hour = items.length.to_f / elapsed_t_hours
     {hours: elapsed_hours, minutes: elapsed_minutes, per_hour: tracks_per_hour}
   end
 
