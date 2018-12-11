@@ -1,7 +1,7 @@
 # Spotifyzer-api
 * Rails API for Spotifyzer - an app that allows users to analyze their Spotify library and listening habits
 * Provides data and makes Spotify API calls for React front end ([repo](https://github.com/davidtom/spotifyzer))
-* View live site [here](https://spotifyzer-fe.herokuapp.com/) (please be patient while Heroku wakes up)
+* ~View live site [here](https://spotifyzer-fe.herokuapp.com/) (please be patient while Heroku wakes up)~ down temporarily - please see demo below instead
 
 ## Features
 * Authorizes users through Spotify's [Authorization Code Flow](https://developer.spotify.com/web-api/authorization-guide/), in tandem with front end
